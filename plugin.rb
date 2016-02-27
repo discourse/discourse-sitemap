@@ -30,7 +30,7 @@ after_initialize do
   end
 
   Discourse::Application.routes.append do
-    mount ::DiscourseSitemap::Engine, at: "/crap"
+    mount ::DiscourseSitemap::Engine, at: "/"
   end
 
   RobotsTxtController.class_eval do
