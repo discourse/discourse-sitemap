@@ -1,0 +1,3 @@
+plugins:
+  sitemap_enabled:
+    default: false
