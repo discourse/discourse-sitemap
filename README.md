@@ -1,8 +1,8 @@
 # Sitemap Plugin
 
-**Authors**: richard@discoursehosting.com (@RGJ) and michael@discoursehosting.com (@michaeld)
-**Version**: 1.0
-**License**: MIT License
+* Authors: richard@discoursehosting.com (@RGJ) and michael@discoursehosting.com (@michaeld)
+* Version: 1.0
+* License: MIT License
 
 ## Installation
 
