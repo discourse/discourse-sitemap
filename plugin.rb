@@ -6,8 +6,6 @@
 
 PLUGIN_NAME = "discourse-sitemap".freeze
 
-register_asset "xsl/sitemap-news.xsl"
-
 after_initialize do
 
   module ::DiscourseSitemap
