@@ -54,6 +54,7 @@ after_initialize do
       Category.where(read_restricted: false).each do |c|
         topics = c.topics.visible
         topics.order(:created_at).reverse_order.each do |t|
+          t.last_posted_at = t.updated_at if t.last_posted_at.nil?
           @topics.push t
         end
       end
@@ -68,6 +69,7 @@ after_initialize do
       Category.where(read_restricted: false).each do |c|
         topics = c.topics.visible
         topics.created_since(72.hours.ago).order(:created_at).reverse_order.each do |t|
+          t.last_posted_at = t.updated_at if t.last_posted_at.nil?
           @topics.push t
         end
       end
