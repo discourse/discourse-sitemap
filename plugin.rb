@@ -6,6 +6,8 @@
 
 PLUGIN_NAME = "discourse-sitemap".freeze
 
+register_asset "xsl/sitemap-news.xsl"
+
 after_initialize do
 
   module ::DiscourseSitemap
@@ -19,9 +21,8 @@ after_initialize do
 
   class DiscourseSitemap::SitemapController < ::ApplicationController
     def generate
+      prepend_view_path "plugins/discourse-sitemapcrap/app/views/" 
       # this code is never called somehow
-      Rails.logger.error "Crappy"
-      render :text => "<p>404 - Sitemap not found.</p>", :status => 404
     end
   end
 
@@ -29,8 +30,10 @@ after_initialize do
     get "sitemap.xml" => "sitemap#generate"
   end
 
-  Discourse::Application.routes.append do
-    mount ::DiscourseSitemap::Engine, at: "/"
+  Discourse::Application.routes.prepend do
+    get "newssitemap.xml" => "robots_txt#generatenewssitemap" 
+    get "sitemap.xml" => "robots_txt#generatesitemap" 
+#    mount ::DiscourseSitemap::Engine, at: "/"
   end
 
   RobotsTxtController.class_eval do
@@ -43,6 +46,34 @@ after_initialize do
         :no_index
       end
       render path, content_type: 'text/plain'
+    end
+
+    def generatesitemap
+      raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
+      prepend_view_path "plugins/discourse-sitemap/app/views/" 
+
+      @topics = Array.new
+      Category.where(read_restricted: false).each do |c|
+        topics = c.topics.visible
+        topics.order(:created_at).reverse_order.each do |t|
+          @topics.push t
+        end
+      end
+      render :sitemap, content_type: 'text/xml; charset=UTF-8' 
+    end
+
+    def generatenewssitemap
+      raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
+      prepend_view_path "plugins/discourse-sitemap/app/views/" 
+
+      @topics = Array.new
+      Category.where(read_restricted: false).each do |c|
+        topics = c.topics.visible
+        topics.created_since(72.hours.ago).order(:created_at).reverse_order.each do |t|
+          @topics.push t
+        end
+      end
+      render :newssitemap, content_type: 'text/xml; charset=UTF-8' 
     end
   end
 end
