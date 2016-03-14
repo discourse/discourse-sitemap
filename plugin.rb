@@ -6,6 +6,8 @@
 
 PLUGIN_NAME = "discourse-sitemap".freeze
 
+enabled_site_setting :sitemap_enabled
+
 after_initialize do
 
   module ::DiscourseSitemap
