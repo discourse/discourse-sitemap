@@ -1,6 +1,6 @@
-# name: External Sitemap
+# name: Discourse Sitemap
 # about: 
-# version: 0.1
+# version: 1.0
 # authors: DiscourseHosting.com
 # url: https://github.com/discoursehosting/discourse-sitemap
 
