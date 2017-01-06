@@ -12,7 +12,7 @@
         http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
     <% @topics.each do |topic| %>
     <url>
-        <loc><%= Discourse.base_url %>/t/<%= topic.slug %>/<%= topic.id %>/</loc>
+        <loc><%= Discourse.base_url %>/t/<%= topic.slug %>/<%= topic.id %></loc>
         <lastmod><%= topic.last_posted_at.xmlschema %></lastmod>
     </url>
     <% end %>
