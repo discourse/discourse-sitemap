@@ -1,5 +1,5 @@
 # name: Discourse Sitemap
-# about: 
+# about:
 # version: 1.0
 # authors: DiscourseHosting.com
 # url: https://github.com/discoursehosting/discourse-sitemap
@@ -19,38 +19,13 @@ after_initialize do
 
   require_dependency "application_controller"
 
-  class DiscourseSitemap::SitemapController < ::ApplicationController
-    def generate
-      prepend_view_path "plugins/discourse-sitemapcrap/app/views/" 
-      # this code is never called somehow
-    end
-  end
+  class ::SitemapController < ::ApplicationController
+    layout false
+    skip_before_filter :preload_json, :check_xhr, :redirect_to_login_if_required
 
-  DiscourseSitemap::Engine.routes.draw do
-    get "sitemap.xml" => "sitemap#generate"
-  end
-
-  Discourse::Application.routes.prepend do
-    get "newssitemap.xml" => "robots_txt#generatenewssitemap" 
-    get "sitemap.xml" => "robots_txt#generatesitemap" 
-#    mount ::DiscourseSitemap::Engine, at: "/"
-  end
-
-  RobotsTxtController.class_eval do
-
-    def index
-      prepend_view_path "plugins/discourse-sitemap/app/views/" 
-      path = if SiteSetting.allow_index_in_robots_txt
-        :index
-      else
-        :no_index
-      end
-      render path, content_type: 'text/plain'
-    end
-
-    def generatesitemap
+    def default
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
-      prepend_view_path "plugins/discourse-sitemap/app/views/" 
+      prepend_view_path "plugins/discourse-sitemap/app/views/"
 
       @topics = Array.new
       Category.where(read_restricted: false).each do |c|
@@ -60,12 +35,12 @@ after_initialize do
           @topics.push t
         end
       end
-      render :sitemap, content_type: 'text/xml; charset=UTF-8' 
+      render :default, content_type: 'text/xml; charset=UTF-8'
     end
 
-    def generatenewssitemap
+    def news
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
-      prepend_view_path "plugins/discourse-sitemap/app/views/" 
+      prepend_view_path "plugins/discourse-sitemap/app/views/"
 
       @topics = Array.new
       Category.where(read_restricted: false).each do |c|
@@ -75,8 +50,13 @@ after_initialize do
           @topics.push t
         end
       end
-      render :newssitemap, content_type: 'text/xml; charset=UTF-8' 
+      render :news, content_type: 'text/xml; charset=UTF-8'
     end
   end
-end
 
+  Discourse::Application.routes.prepend do
+    get "newssitemap.xml" => "sitemap#news"
+    get "sitemap.xml" => "sitemap#default"
+  end
+
+end
