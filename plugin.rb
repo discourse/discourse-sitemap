@@ -19,9 +19,11 @@ after_initialize do
 
   require_dependency "application_controller"
 
-  class ::SitemapController < ::ApplicationController
+  class DiscourseSitemap::SitemapController < ::ApplicationController
     layout false
     skip_before_filter :preload_json, :check_xhr, :redirect_to_login_if_required
+
+    SITEMAP_SIZE = 50000.freeze
 
     def topics_query(since = nil)
       category_ids = Category.where(read_restricted: false).pluck(:id)
@@ -31,14 +33,40 @@ after_initialize do
       query
     end
 
+    def index
+      raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
+      prepend_view_path "plugins/discourse-sitemap/app/views/"
+
+      @size, @lastmod = Rails.cache.fetch("sitemap", expires_in: 24.hours) do
+        count = topics_query.count
+        size = count / SITEMAP_SIZE
+        size += 1 if count % SITEMAP_SIZE > 0
+        time = Time.now
+        1.upto(size) do |i|
+          Rails.cache.delete("sitemap/#{i}")
+        end
+        [size, time]
+      end
+      if @size > 1
+        render :index, content_type: 'text/xml; charset=UTF-8'
+      else
+        default
+      end
+    end
+
     def default
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      @topics = Array.new
-      topics_query.select(:id, :slug, :last_posted_at, :updated_at).each do |t|
-        t.last_posted_at = t.updated_at if t.last_posted_at.nil?
-        @topics.push t
+      page = Integer(params.require(:page))
+      offset = (page - 1) * SITEMAP_SIZE
+
+      @topics = Rails.cache.fetch("sitemap/#{page}", expires_in: 24.hours) do
+        topics = Array.new
+        topics_query.limit(SITEMAP_SIZE).offset(offset).select(:id, :slug, :last_posted_at, :updated_at).each do |t|
+          t.last_posted_at = t.updated_at if t.last_posted_at.nil?
+          topics.push t
+        end
       end
       render :default, content_type: 'text/xml; charset=UTF-8'
     end
@@ -47,14 +75,21 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      @topics = topics_query(72.hours.ago).select(:id, :title, :slug, :created_at)
+      @topics = Rails.cache.fetch("sitemap/news", expires_in: 5.minutes) do
+        topics_query(72.hours.ago).select(:id, :title, :slug, :created_at)
+      end
       render :news, content_type: 'text/xml; charset=UTF-8'
     end
   end
 
   Discourse::Application.routes.prepend do
-    get "sitemap.xml" => "sitemap#default"
-    get "newssitemap.xml" => "sitemap#news"
+    mount ::DiscourseSitemap::Engine, at: "/sitemap"
+  end
+
+  DiscourseSitemap::Engine.routes.draw do
+    get ".xml" => "sitemap#index"
+    get "news.xml" => "sitemap#news"
+    get ":page.xml" => "sitemap#default"
   end
 
 end
