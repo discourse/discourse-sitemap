@@ -21,7 +21,7 @@ after_initialize do
 
   class DiscourseSitemap::SitemapController < ::ApplicationController
     layout false
-    skip_before_filter :preload_json, :check_xhr, :redirect_to_login_if_required
+    skip_before_filter :preload_json, :check_xhr
 
     SITEMAP_SIZE = 50000.freeze
 
