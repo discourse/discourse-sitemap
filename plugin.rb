@@ -23,17 +23,22 @@ after_initialize do
     layout false
     skip_before_filter :preload_json, :check_xhr, :redirect_to_login_if_required
 
+    def topics_query(since = nil)
+      category_ids = Category.where(read_restricted: false).pluck(:id)
+      query = Topic.where(category_id: category_ids, visible: true)
+      query = query.created_since(since) unless since.nil?
+      query = query.order(created_at: :desc)
+      query
+    end
+
     def default
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
       @topics = Array.new
-      Category.where(read_restricted: false).each do |c|
-        topics = c.topics.visible
-        topics.order(:created_at).reverse_order.each do |t|
-          t.last_posted_at = t.updated_at if t.last_posted_at.nil?
-          @topics.push t
-        end
+      topics_query.select(:id, :slug, :last_posted_at, :updated_at).each do |t|
+        t.last_posted_at = t.updated_at if t.last_posted_at.nil?
+        @topics.push t
       end
       render :default, content_type: 'text/xml; charset=UTF-8'
     end
@@ -42,21 +47,14 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      @topics = Array.new
-      Category.where(read_restricted: false).each do |c|
-        topics = c.topics.visible
-        topics.created_since(72.hours.ago).order(:created_at).reverse_order.each do |t|
-          t.last_posted_at = t.updated_at if t.last_posted_at.nil?
-          @topics.push t
-        end
-      end
+      @topics = topics_query(72.hours.ago).select(:id, :title, :slug, :created_at)
       render :news, content_type: 'text/xml; charset=UTF-8'
     end
   end
 
   Discourse::Application.routes.prepend do
-    get "newssitemap.xml" => "sitemap#news"
     get "sitemap.xml" => "sitemap#default"
+    get "newssitemap.xml" => "sitemap#news"
   end
 
 end
