@@ -50,7 +50,7 @@ after_initialize do
       if @size > 1
         render :index, content_type: 'text/xml; charset=UTF-8'
       else
-        default
+        sitemap(1)
       end
     end
 
@@ -59,6 +59,10 @@ after_initialize do
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
       page = Integer(params.require(:page))
+      sitemap(page)
+    end
+
+    def sitemap(page)
       offset = (page - 1) * SITEMAP_SIZE
 
       @topics = Rails.cache.fetch("sitemap/#{page}", expires_in: 24.hours) do
