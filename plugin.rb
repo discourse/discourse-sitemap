@@ -79,6 +79,9 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
+      dlocale = SiteSetting.default_locale.downcase
+      @locale = dlocale.gsub(/_.*/, '')
+      @locale = dlocale.sub('_', '-') if @locale === "zh"
       @topics = Rails.cache.fetch("sitemap/news", expires_in: 5.minutes) do
         topics_query(72.hours.ago).select(:id, :title, :slug, :created_at)
       end
