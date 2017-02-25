@@ -15,7 +15,7 @@
         <news:news>
             <news:publication>
                 <news:name><%= SiteSetting.title %></news:name>
-                <news:language><%= SiteSetting.default_locale %></news:language>
+                <news:language><%= @locale %></news:language>
             </news:publication>
             <news:publication_date><%= topic.created_at.xmlschema %></news:publication_date>
             <news:title><%= topic.title %></news:title>
