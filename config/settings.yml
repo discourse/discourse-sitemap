@@ -1,3 +1,5 @@
 plugins:
   sitemap_enabled:
     default: false
+  sitemap_topics_per_page:
+    default: 10000
