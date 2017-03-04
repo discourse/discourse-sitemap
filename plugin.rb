@@ -23,8 +23,6 @@ after_initialize do
     layout false
     skip_before_filter :preload_json, :check_xhr
 
-    SITEMAP_SIZE = 50000.freeze
-
     def topics_query(since = nil)
       category_ids = Category.where(read_restricted: false).pluck(:id)
       query = Topic.where(category_id: category_ids, visible: true)
@@ -37,21 +35,22 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      @size, @lastmod = Rails.cache.fetch("sitemap", expires_in: 24.hours) do
+      @output = Rails.cache.fetch("sitemap/index", expires_in: 24.hours) do
         count = topics_query.count
-        size = count / SITEMAP_SIZE
-        size += 1 if count % SITEMAP_SIZE > 0
-        time = Time.now
-        1.upto(size) do |i|
+        sitemap_size = SiteSetting.sitemap_topics_per_page
+        @size = count / sitemap_size
+        @size += 1 if count % sitemap_size > 0
+        @lastmod = Time.now
+        1.upto(@size) do |i|
           Rails.cache.delete("sitemap/#{i}")
         end
-        [size, time]
+        if @size > 1
+          render :index, content_type: 'text/xml; charset=UTF-8'
+        else
+          sitemap(1)
+        end
       end
-      if @size > 1
-        render :index, content_type: 'text/xml; charset=UTF-8'
-      else
-        sitemap(1)
-      end
+      render :text => @output[0], content_type: 'text/xml; charset=UTF-8' unless performed?
     end
 
     def default
@@ -63,29 +62,33 @@ after_initialize do
     end
 
     def sitemap(page)
-      offset = (page - 1) * SITEMAP_SIZE
+      sitemap_size = SiteSetting.sitemap_topics_per_page
+      offset = (page - 1) * sitemap_size
 
-      @topics = Rails.cache.fetch("sitemap/#{page}", expires_in: 24.hours) do
-        topics = Array.new
-        topics_query.limit(SITEMAP_SIZE).offset(offset).select(:id, :slug, :last_posted_at, :updated_at).each do |t|
-          t.last_posted_at = t.updated_at if t.last_posted_at.nil?
-          topics.push t
+      @output = Rails.cache.fetch("sitemap/#{page}", expires_in: 24.hours) do
+        @topics = Array.new
+        topics_query.limit(sitemap_size).offset(offset).pluck(:id, :slug, :last_posted_at, :updated_at).each do |t|
+          t[2] = t[3] if t[2].nil?
+          @topics.push t
         end
+        render :default, content_type: 'text/xml; charset=UTF-8'
       end
-      render :default, content_type: 'text/xml; charset=UTF-8'
+      render :text => @output[0], content_type: 'text/xml; charset=UTF-8' unless performed?
+      return @output
     end
 
     def news
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      dlocale = SiteSetting.default_locale.downcase
-      @locale = dlocale.gsub(/_.*/, '')
-      @locale = dlocale.sub('_', '-') if @locale === "zh"
-      @topics = Rails.cache.fetch("sitemap/news", expires_in: 5.minutes) do
-        topics_query(72.hours.ago).select(:id, :title, :slug, :created_at)
+      @output = Rails.cache.fetch("sitemap/news", expires_in: 5.minutes) do
+        dlocale = SiteSetting.default_locale.downcase
+        @locale = dlocale.gsub(/_.*/, '')
+        @locale = dlocale.sub('_', '-') if @locale === "zh"
+        @topics = topics_query(72.hours.ago).pluck(:id, :title, :slug, :created_at)
+        render :news, content_type: 'text/xml; charset=UTF-8'
       end
-      render :news, content_type: 'text/xml; charset=UTF-8'
+      render :text => @output[0], content_type: 'text/xml; charset=UTF-8' unless performed?
     end
   end
 

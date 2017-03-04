@@ -11,14 +11,14 @@
         http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
     <% @topics.each do |topic| %>
     <url>
-        <loc><%= Discourse.base_url %>/t/<%= topic.slug %>/<%= topic.id %></loc>
+        <loc><%= Discourse.base_url %>/t/<%= topic[2] %>/<%= topic[0] %></loc>
         <news:news>
             <news:publication>
                 <news:name><%= SiteSetting.title %></news:name>
                 <news:language><%= @locale %></news:language>
             </news:publication>
-            <news:publication_date><%= topic.created_at.xmlschema %></news:publication_date>
-            <news:title><%= topic.title %></news:title>
+            <news:publication_date><%= topic[3].xmlschema %></news:publication_date>
+            <news:title><%= topic[1] %></news:title>
         </news:news>
     </url>
     <% end %>
