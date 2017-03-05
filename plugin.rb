@@ -1,7 +1,7 @@
 # name: Discourse Sitemap
 # about:
-# version: 1.0
-# authors: DiscourseHosting.com
+# version: 1.1
+# authors: DiscourseHosting.com, vinothkannans 
 # url: https://github.com/discoursehosting/discourse-sitemap
 
 PLUGIN_NAME = "discourse-sitemap".freeze
