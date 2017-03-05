@@ -35,9 +35,9 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      @output = Rails.cache.fetch("sitemap/index", expires_in: 24.hours) do
+      sitemap_size = SiteSetting.sitemap_topics_per_page
+      @output = Rails.cache.fetch("sitemap/index/#{sitemap_size}", expires_in: 24.hours) do
         count = topics_query.count
-        sitemap_size = SiteSetting.sitemap_topics_per_page
         @size = count / sitemap_size
         @size += 1 if count % sitemap_size > 0
         @lastmod = Time.now
@@ -65,7 +65,7 @@ after_initialize do
       sitemap_size = SiteSetting.sitemap_topics_per_page
       offset = (page - 1) * sitemap_size
 
-      @output = Rails.cache.fetch("sitemap/#{page}", expires_in: 24.hours) do
+      @output = Rails.cache.fetch("sitemap/#{page}/#{sitemap_size}", expires_in: 24.hours) do
         @topics = Array.new
         topics_query.limit(sitemap_size).offset(offset).pluck(:id, :slug, :last_posted_at, :updated_at).each do |t|
           t[2] = t[3] if t[2].nil?
