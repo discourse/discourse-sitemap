@@ -21,7 +21,7 @@ after_initialize do
 
   class DiscourseSitemap::SitemapController < ::ApplicationController
     layout false
-    skip_before_filter :preload_json, :check_xhr
+    skip_before_action :preload_json, :check_xhr
 
     def topics_query(since = nil)
       category_ids = Category.where(read_restricted: false).pluck(:id)
