@@ -50,7 +50,7 @@ after_initialize do
           sitemap(1)
         end
       end
-      render :text => @output[0], content_type: 'text/xml; charset=UTF-8' unless performed?
+      render :plain => @output, content_type: 'text/xml; charset=UTF-8' unless performed?
     end
 
     def default
@@ -73,7 +73,7 @@ after_initialize do
         end
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
-      render :text => @output[0], content_type: 'text/xml; charset=UTF-8' unless performed?
+      render :plain => @output, content_type: 'text/xml; charset=UTF-8' unless performed?
       return @output
     end
 
@@ -88,7 +88,7 @@ after_initialize do
         @topics = topics_query(72.hours.ago).pluck(:id, :title, :slug, :created_at)
         render :news, content_type: 'text/xml; charset=UTF-8'
       end
-      render :text => @output[0], content_type: 'text/xml; charset=UTF-8' unless performed?
+      render :plain => @output, content_type: 'text/xml; charset=UTF-8' unless performed?
     end
   end
 
