@@ -19,7 +19,7 @@ Just go to Admin - Settings - Plugins and check `sitemap enabled`
 The sitemap plugin publishes two files:
 
 * `/sitemap.xml` : the regular Google Sitemap format
-* `/newssitemap.xml` : special sitemap for Google News containing all new topics in the last three days
+* `/sitemap/news.xml` : special sitemap for Google News containing all new topics in the last three days
 
 ## Known issues
 
