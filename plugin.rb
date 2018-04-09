@@ -40,19 +40,20 @@ after_initialize do
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
       sitemap_size = SiteSetting.sitemap_topics_per_page
-      @output = Rails.cache.fetch("sitemap/index/v2/#{sitemap_size}", expires_in: 24.hours) do
+      @output = Rails.cache.fetch("sitemap/index/v3/#{sitemap_size}", expires_in: 3.days) do
         count = topics_query.count
         @size = count / sitemap_size
         @size += 1 if count % sitemap_size > 0
-
-        # grabbing full sitemap more than once a day seems too much
-        @lastmod = 1.day.ago
+        @lastmod = Time.now
         1.upto(@size) do |i|
           Rails.cache.delete("sitemap/#{i}")
         end
-        render :index, content_type: 'text/xml; charset=UTF-8'
+        render_to_string :index, content_type: 'text/xml; charset=UTF-8'
       end
-      render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
+
+      @output.sub!("[TIME_PLACEHOLDER]", last_posted_at.xmlschema)
+
+      render plain: @output, content_type: 'text/xml; charset=UTF-8'
     end
 
     def default
@@ -69,7 +70,7 @@ after_initialize do
 
       sitemap_size = SiteSetting.sitemap_topics_per_page
 
-      @output = Rails.cache.fetch("sitemap/recent", expires_in: 5.minutes) do
+      @output = Rails.cache.fetch("sitemap/recent/#{last_posted_at.to_i}", expires_in: 1.hour) do
         @topics = Array.new
         topics_query(3.days.ago).limit(sitemap_size).pluck(:id, :slug, :last_posted_at, :updated_at, :posts_count).each do |t|
           t[2] = t[3] if t[2].nil?
@@ -110,6 +111,12 @@ after_initialize do
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
     end
+
+    private
+
+      def last_posted_at
+        topics_query.where.not(last_posted_at: nil).last.last_posted_at
+      end
   end
 
   Discourse::Application.routes.prepend do
