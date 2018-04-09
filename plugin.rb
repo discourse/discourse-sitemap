@@ -40,18 +40,23 @@ after_initialize do
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
       sitemap_size = SiteSetting.sitemap_topics_per_page
-      @output = Rails.cache.fetch("sitemap/index/v3/#{sitemap_size}", expires_in: 3.days) do
+
+      # 6 hour cache just in case new pages are added
+      @output = Rails.cache.fetch("sitemap/index/v4/#{sitemap_size}", expires_in: 6.hours) do
         count = topics_query.count
         @size = count / sitemap_size
         @size += 1 if count % sitemap_size > 0
-        @lastmod = Time.now
+
+        # 3 days are covered by recent, no need to index so frequently
+        @lastmod = 3.days.ago
         1.upto(@size) do |i|
           Rails.cache.delete("sitemap/#{i}")
         end
         render_to_string :index, content_type: 'text/xml; charset=UTF-8'
       end
 
-      @output.sub!("[TIME_PLACEHOLDER]", last_posted_at.xmlschema)
+      # fixes timestamp cause we need correct data for latest
+      @output = @output.sub("[TIME_PLACEHOLDER]", last_posted_at.xmlschema)
 
       render plain: @output, content_type: 'text/xml; charset=UTF-8'
     end
