@@ -2,12 +2,12 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <% 1.upto(@size) do |i| %>
    <sitemap>
-      <loc><%= Discourse.base_url %>/sitemap/<%= i %>.xml</loc>
+      <loc><%= Discourse.base_url %>/sitemap_<%= i %>.xml</loc>
       <lastmod><%= @lastmod.xmlschema %></lastmod>
    </sitemap>
    <% end %>
    <sitemap>
-      <loc><%= Discourse.base_url %>/sitemap/recent.xml</loc>
+      <loc><%= Discourse.base_url %>/sitemap_recent.xml</loc>
       <lastmod>[TIME_PLACEHOLDER]</lastmod>
       <changefreq>always</changefreq>
    </sitemap>
