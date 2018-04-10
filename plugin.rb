@@ -41,8 +41,8 @@ after_initialize do
 
       sitemap_size = SiteSetting.sitemap_topics_per_page
 
-      # 6 hour cache just in case new pages are added
-      @output = Rails.cache.fetch("sitemap/index/v4/#{sitemap_size}", expires_in: 6.hours) do
+      # 1 hour cache just in case new pages are added
+      @output = Rails.cache.fetch("sitemap/index/v5/#{sitemap_size}", expires_in: 1.hour) do
         count = topics_query.count
         @size = count / sitemap_size
         @size += 1 if count % sitemap_size > 0
