@@ -6,9 +6,6 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
         http://www.google.com/schemas/sitemap-image/1.1
         http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
-    <% if @changefreq %>
-      <changefreq><%=@changefreq%></changefreq>
-    <% end %>
     <% @topics.each do |topic| %>
     <url>
     <%-

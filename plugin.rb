@@ -81,7 +81,6 @@ after_initialize do
           t[2] = t[3] if t[2].nil?
           @topics.push t
         end
-        @changefreq = "always"
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
