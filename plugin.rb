@@ -65,6 +65,10 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
+      if params[:page].to_i < 1
+        raise ActionController::RoutingError.new('Not Found')
+      end
+
       page = Integer(params.require(:page))
       sitemap(page)
     end
