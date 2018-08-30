@@ -8,7 +8,16 @@
         http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
     <% @topics.each do |topic| %>
     <url>
-        <loc><%= Discourse.base_url %>/t/<%= topic[1] %>/<%= topic[0] %></loc>
+    <%-
+        url = "#{Discourse.base_url}/t/#{topic[1]}/#{topic[0]}"
+        if topic[4]
+          page = ((topic[4]+1) / TopicView.chunk_size) + 1
+          if page > 1
+            url += "?page=#{page}"
+          end
+        end
+    -%>
+        <loc><%= url %></loc>
         <lastmod><%= topic[2].xmlschema %></lastmod>
     </url>
     <% end %>
