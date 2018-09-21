@@ -124,7 +124,7 @@ after_initialize do
     private
 
       def last_posted_at
-        topics_query.where.not(last_posted_at: nil).last.last_posted_at
+        topics_query.where.not(last_posted_at: nil).last&.last_posted_at
       end
   end
 
