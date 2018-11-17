@@ -1,14 +1,14 @@
 # Sitemap Plugin
 
 * Authors: richard@discoursehosting.com (@RGJ) and michael@discoursehosting.com (@michaeld)
-* Version: 1.0
+* Version: 1.2
 * License: MIT License
 
 ## Installation
 
 Follow [the usual installation instructions](https://meta.discourse.org/t/advanced-troubleshooting-with-docker/15927#Example:%20Install%20a%20plugin).
 
-On a non-Docker install do `bundle exec rake plugin:install repo=http://github.com/discoursehosting/discourse-sitemap`. There is no need for asset precompilation.
+On a non-Docker install do `bundle exec rake plugin:install repo=http://github.com/discourse/discourse-sitemap`. There is no need for asset precompilation.
 
 ## Setup 
 

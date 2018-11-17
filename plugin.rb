@@ -1,6 +1,6 @@
 # name: discourse-sitemap
-# about:
-# version: 1.1
+# about: Generate XML sitemap for your Discourse forum.
+# version: 1.2
 # authors: DiscourseHosting.com, vinothkannans
 # url: https://github.com/discourse/discourse-sitemap
 
