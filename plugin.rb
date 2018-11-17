@@ -35,28 +35,30 @@ after_initialize do
       query
     end
 
+    def topics_query_by_page(index)
+      offset = (index - 1) * sitemap_size
+      topics_query.limit(sitemap_size).offset(offset)
+    end
+
     def index
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
-
-      sitemap_size = SiteSetting.sitemap_topics_per_page
 
       # 1 hour cache just in case new pages are added
       @output = Rails.cache.fetch("sitemap/index/v6/#{sitemap_size}", expires_in: 1.hour) do
         count = topics_query.count
         @size = count / sitemap_size
         @size += 1 if count % sitemap_size > 0
+        @lastmod = {}
 
-        # 3 days are covered by recent, no need to index so frequently
-        @lastmod = 3.days.ago
         1.upto(@size) do |i|
+          @lastmod[i] = last_posted_at(i).xmlschema
           Rails.cache.delete("sitemap/#{i}")
         end
+
+        @lastmod['recent'] = last_posted_at.xmlschema
         render_to_string :index, content_type: 'text/xml; charset=UTF-8'
       end
-
-      # fixes timestamp cause we need correct data for latest
-      @output = @output.sub("[TIME_PLACEHOLDER]", last_posted_at.xmlschema)
 
       render plain: @output, content_type: 'text/xml; charset=UTF-8'
     end
@@ -77,8 +79,6 @@ after_initialize do
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
 
-      sitemap_size = SiteSetting.sitemap_topics_per_page
-
       @output = Rails.cache.fetch("sitemap/recent/#{last_posted_at.to_i}", expires_in: 1.hour) do
         @topics = Array.new
         topics_query(3.days.ago).limit(sitemap_size).pluck(:id, :slug, :last_posted_at, :updated_at, :posts_count).each do |t|
@@ -92,12 +92,9 @@ after_initialize do
     end
 
     def sitemap(page)
-      sitemap_size = SiteSetting.sitemap_topics_per_page
-      offset = (page - 1) * sitemap_size
-
       @output = Rails.cache.fetch("sitemap/#{page}/#{sitemap_size}", expires_in: 24.hours) do
         @topics = Array.new
-        topics_query.limit(sitemap_size).offset(offset).pluck(:id, :slug, :last_posted_at, :updated_at).each do |t|
+        topics_query_by_page(page).pluck(:id, :slug, :last_posted_at, :updated_at).each do |t|
           t[2] = t[3] if t[2].nil?
           @topics.push t
         end
@@ -123,8 +120,13 @@ after_initialize do
 
     private
 
-    def last_posted_at
-      topics_query.where.not(last_posted_at: nil).last&.last_posted_at
+    def last_posted_at(page = nil)
+      query = page.present? ? topics_query_by_page(page) : topics_query
+      query.maximum(:last_posted_at) || query.maximum(:updated_at) || 3.days.ago
+    end
+
+    def sitemap_size
+      @sitemap_size ||= SiteSetting.sitemap_topics_per_page
     end
   end
 
