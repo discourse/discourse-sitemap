@@ -90,7 +90,7 @@ after_initialize do
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
-      return @output
+      @output
     end
 
     def sitemap(page)
@@ -103,7 +103,7 @@ after_initialize do
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
-      return @output
+      @output
     end
 
     def news
