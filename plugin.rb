@@ -68,13 +68,8 @@ after_initialize do
     def default
       raise ActionController::RoutingError.new('Not Found') unless SiteSetting.sitemap_enabled
       prepend_view_path "plugins/discourse-sitemap/app/views/"
-      raw_page = params[:page]
 
-      if raw_page.to_i < 1 || raw_page.to_i.to_s != raw_page
-        raise ActionController::RoutingError.new('Not Found')
-      end
-
-      page = Integer(raw_page)
+      page = Integer(params[:page])
       sitemap(page)
     end
 
@@ -141,7 +136,7 @@ after_initialize do
     get "sitemap.xml" => "sitemap#index"
     get "news.xml" => "sitemap#news"
     get "sitemap_recent.xml" => "sitemap#recent"
-    get "sitemap_:page.xml" => "sitemap#default"
+    get "sitemap_:page.xml" => "sitemap#default", page: /[1-9][0-9]*/
   end
 
 end

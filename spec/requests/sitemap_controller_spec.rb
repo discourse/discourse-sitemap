@@ -9,5 +9,17 @@ RSpec.describe DiscourseSitemap::SitemapController do
 
       expect(response.status).to eq(404)
     end
+
+    it 'does not fail when the page starts with a zero' do
+      get '/sitemap_0.xml'
+
+      expect(response.status).to eq(404)
+    end
+
+    it 'works' do
+      get '/sitemap_1.xml'
+
+      expect(response.status).to eq(200)
+    end
   end
 end
