@@ -3,3 +3,7 @@ plugins:
     default: true
   sitemap_topics_per_page:
     default: 10000
+  sitemap_excluded_topics_pattern:
+    default: ''
+    validator: RegexSettingValidator
+    

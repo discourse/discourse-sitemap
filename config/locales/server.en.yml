@@ -2,3 +2,4 @@ en:
   site_settings:
     sitemap_enabled: 'Enable sitemap.xml'
     sitemap_topics_per_page: 'Number of topics shown on the sitemap page.'
+    sitemap_excluded_topics_pattern: 'exclude topics by a regex match on title.'

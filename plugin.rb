@@ -28,6 +28,12 @@ after_initialize do
     def topics_query(since = nil)
       category_ids = Category.where(read_restricted: false).pluck(:id)
       query = Topic.where(category_id: category_ids, visible: true)
+      
+      excluded_topics_pattern = SiteSetting.sitemap_excluded_topics_pattern
+      if excluded_topics_pattern.present?
+        query = query.where("title !~ ?", excluded_topics_pattern)
+      end
+      
       if since
         query = query.where('last_posted_at > ?', since)
         query = query.order(last_posted_at: :desc)
