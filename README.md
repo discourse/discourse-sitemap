@@ -6,7 +6,7 @@
 
 ## Installation
 
-Follow [the usual installation instructions](https://meta.discourse.org/t/advanced-troubleshooting-with-docker/15927#Example:%20Install%20a%20plugin).
+Follow [the usual installation instructions](https://meta.discourse.org/t/install-plugins-in-discourse/19157).
 
 On a non-Docker install do `bundle exec rake plugin:install repo=http://github.com/discourse/discourse-sitemap`. There is no need for asset precompilation.
 
