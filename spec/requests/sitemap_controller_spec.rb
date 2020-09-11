@@ -4,6 +4,10 @@ require 'rails_helper'
 
 RSpec.describe DiscourseSitemap::SitemapController do
   describe '#default' do
+    before do
+      Sitemap.create!(name: '1', last_posted_at: Time.now)
+    end
+
     it 'does not fail then page is a string starting with a number' do
       get '/sitemap_1asd.xml'
 
