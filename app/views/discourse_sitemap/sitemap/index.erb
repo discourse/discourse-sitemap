@@ -1,13 +1,9 @@
 <%= render partial: 'discourse_sitemap/sitemap/header' %>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <% 1.upto(@size) do |i| %>
+  <% @sitemaps.each do |sitemap| %>
    <sitemap>
-      <loc><%= Discourse.base_url %>/sitemap_<%= i %>.xml</loc>
-      <lastmod><%= @lastmod[i] %></lastmod>
+      <loc><%= Discourse.base_url %>/sitemap_<%= sitemap.name %>.xml</loc>
+      <lastmod><%= sitemap.last_posted_at.xmlschema %></lastmod>
    </sitemap>
    <% end %>
-   <sitemap>
-      <loc><%= Discourse.base_url %>/sitemap_recent.xml</loc>
-      <lastmod><%= @lastmod['recent'] %></lastmod>
-   </sitemap>
 </sitemapindex>

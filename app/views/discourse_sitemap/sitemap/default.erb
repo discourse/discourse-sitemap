@@ -18,7 +18,7 @@
         end
     -%>
         <loc><%= url %></loc>
-        <lastmod><%= topic[2].xmlschema %></lastmod>
+        <lastmod><%= (topic[2] || topic[3]).xmlschema %></lastmod>
     </url>
     <% end %>
 </urlset>
