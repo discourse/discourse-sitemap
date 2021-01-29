@@ -48,7 +48,7 @@ after_initialize do
       raise Discourse::NotFound if sitemap.blank?
 
       @output = Rails.cache.fetch("sitemap/#{index}/#{Sitemap.size}", expires_in: 24.hours) do
-        @topics = Sitemap.topics_query_by_page(index.to_i).pluck(:id, :slug, :last_posted_at, :updated_at).to_a
+        @topics = Sitemap.topics_query_by_page(index.to_i).pluck(:id, :slug, :bumped_at, :updated_at).to_a
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
@@ -60,7 +60,7 @@ after_initialize do
       sitemap.update_last_posted_at!
 
       @output = Rails.cache.fetch("sitemap/recent/#{sitemap.last_posted_at.to_i}", expires_in: 1.hour) do
-        @topics = Sitemap.topics_query(3.days.ago).limit(Sitemap.size).pluck(:id, :slug, :last_posted_at, :updated_at, :posts_count).to_a
+        @topics = Sitemap.topics_query(3.days.ago).limit(Sitemap.size).pluck(:id, :slug, :bumped_at, :updated_at, :posts_count).to_a
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?

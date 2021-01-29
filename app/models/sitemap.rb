@@ -8,7 +8,7 @@ class Sitemap < ActiveRecord::Base
     query = self.name == RECENT_SITEMAP_NAME ? Sitemap.topics_query : Sitemap.topics_query_by_page(name.to_i)
 
     self.update!(
-      last_posted_at: query.maximum(:last_posted_at) || query.maximum(:updated_at) || 3.days.ago,
+      last_posted_at: query.maximum(:bumped_at) || query.maximum(:updated_at) || 3.days.ago,
       enabled: true
     )
   end
@@ -33,10 +33,10 @@ class Sitemap < ActiveRecord::Base
     category_ids = Category.where(read_restricted: false).pluck(:id)
     query = Topic.where(category_id: category_ids, visible: true)
     if since
-      query = query.where('last_posted_at > ?', since)
-      query = query.order(last_posted_at: :desc)
+      query = query.where('bumped_at > ?', since)
+      query = query.order(bumped_at: :desc)
     else
-      query = query.order(last_posted_at: :asc)
+      query = query.order(bumped_at: :asc)
     end
     query
   end
