@@ -4,6 +4,8 @@
 * Version: 1.2
 * License: MIT License
 
+https://meta.discourse.org/t/discourse-sitemap/40348/
+
 ## Installation
 
 Follow [the usual installation instructions](https://meta.discourse.org/t/install-plugins-in-discourse/19157).
