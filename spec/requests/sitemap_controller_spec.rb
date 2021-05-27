@@ -32,7 +32,7 @@ RSpec.describe DiscourseSitemap::SitemapController do
       # 18 posts - one incomplete page
 
       (1..TopicView.chunk_size - 2).each { |idx| Fabricate(:post, topic: topic) }
-      topic.update!(bumped_at: 4.hour.ago)
+      topic.update!(updated_at: 4.hour.ago)
       get '/sitemap_recent.xml'
       url = Nokogiri::XML::Document.parse(response.body).at_css('loc').text
       expect(url).not_to include('?page=2')
@@ -40,7 +40,7 @@ RSpec.describe DiscourseSitemap::SitemapController do
       # 19 posts - still one incomplete page
 
       Fabricate(:post, topic: topic)
-      topic.update!(bumped_at: 3.hour.ago)
+      topic.update!(updated_at: 3.hour.ago)
       get '/sitemap_recent.xml'
       url = Nokogiri::XML::Document.parse(response.body).at_css('loc').text
       expect(url).not_to include('?page=2')
@@ -48,7 +48,7 @@ RSpec.describe DiscourseSitemap::SitemapController do
       # 20 posts - one complete page
 
       Fabricate(:post, topic: topic)
-      topic.update!(bumped_at: 2.hour.ago)
+      topic.update!(updated_at: 2.hour.ago)
       get '/sitemap_recent.xml'
       url = Nokogiri::XML::Document.parse(response.body).at_css('loc').text
       expect(url).not_to include('?page=2')
@@ -56,7 +56,7 @@ RSpec.describe DiscourseSitemap::SitemapController do
       # 21 posts - two pages - one complete page and one incomplete page
 
       Fabricate(:post, topic: topic)
-      topic.update!(bumped_at: 1.hour.ago)
+      topic.update!(updated_at: 1.hour.ago)
       get '/sitemap_recent.xml'
       url = Nokogiri::XML::Document.parse(response.body).at_css('loc').text
       expect(url).to include('?page=2')

@@ -8,7 +8,7 @@ class Sitemap < ActiveRecord::Base
     query = self.name == RECENT_SITEMAP_NAME ? Sitemap.topics_query : Sitemap.topics_query_by_page(name.to_i)
 
     self.update!(
-      last_posted_at: query.maximum(:bumped_at) || query.maximum(:updated_at) || 3.days.ago,
+      last_posted_at: query.maximum(:updated_at) || 3.days.ago,
       enabled: true
     )
   end
