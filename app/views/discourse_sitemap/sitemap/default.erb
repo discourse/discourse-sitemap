@@ -11,10 +11,9 @@
     <%-
         url = "#{Discourse.base_url}/t/#{topic[1]}/#{topic[0]}"
         if topic[4]
-          page = ((topic[4]+1) / TopicView.chunk_size) + 1
-          if page > 1
-            url += "?page=#{page}"
-          end
+          page = topic[4] / TopicView.chunk_size
+          page += 1 if topic[4] % TopicView.chunk_size > 0
+          url += "?page=#{page}" if page > 1
         end
     -%>
         <loc><%= url %></loc>
