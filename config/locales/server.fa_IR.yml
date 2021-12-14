@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  site_settings:
+    sitemap_enabled: 'فعال کردن sitemap.xml'
+    sitemap_topics_per_page: 'تعداد موضوعات نشان داده شده در صفحه نقشه سایت.'
