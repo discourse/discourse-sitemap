@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 it:
+  site_settings:
+    sitemap_enabled: 'Abilita sitemap.xml'
+    sitemap_topics_per_page: 'Numero degli argomenti mostrati nella pagina della mappa del sito.'
