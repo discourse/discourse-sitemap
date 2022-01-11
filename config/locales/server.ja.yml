@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 ja:
+  site_settings:
+    sitemap_enabled: 'sitemap.xml を有効にする'
+    sitemap_topics_per_page: 'サイトマップページに表示されるトピック数。'

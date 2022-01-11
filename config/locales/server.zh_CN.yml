@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  site_settings:
+    sitemap_enabled: '启用 sitemap.xml'
+    sitemap_topics_per_page: '站点地图页面上显示的话题数。'
