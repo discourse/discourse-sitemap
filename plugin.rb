@@ -22,7 +22,7 @@ after_initialize do
   require_dependency "application_controller"
 
   [
-    '../app/models/sitemap.rb',
+    '../app/models/discourse_sitemap/sitemap.rb',
     '../app/jobs/scheduled/update_sitemaps.rb'
   ].each { |path| load File.expand_path(path, __FILE__) }
 
@@ -37,18 +37,18 @@ after_initialize do
     end
 
     def index
-      @sitemaps = Sitemap.where(enabled: true)
+      @sitemaps = DiscourseSitemap::Sitemap.where(enabled: true)
 
       render :index, content_type: 'text/xml; charset=UTF-8'
     end
 
     def default
       index = params.require(:page)
-      sitemap = Sitemap.find_by(enabled: true, name: index.to_s)
+      sitemap = DiscourseSitemap::Sitemap.find_by(enabled: true, name: index.to_s)
       raise Discourse::NotFound if sitemap.blank?
 
-      @output = Rails.cache.fetch("sitemap/#{index}/#{Sitemap.size}", expires_in: 24.hours) do
-        @topics = Sitemap.topics_query_by_page(index.to_i).pluck(:id, :slug, :bumped_at, :updated_at).to_a
+      @output = Rails.cache.fetch("sitemap/#{index}/#{DiscourseSitemap::Sitemap.size}", expires_in: 24.hours) do
+        @topics = DiscourseSitemap::Sitemap.topics_query_by_page(index.to_i).pluck(:id, :slug, :bumped_at, :updated_at).to_a
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
@@ -56,11 +56,12 @@ after_initialize do
     end
 
     def recent
-      sitemap = Sitemap.find_or_initialize_by(name: Sitemap::RECENT_SITEMAP_NAME)
+      sitemap = DiscourseSitemap::Sitemap.find_or_initialize_by(name: DiscourseSitemap::Sitemap::RECENT_SITEMAP_NAME)
       sitemap.update_last_posted_at!
 
       @output = Rails.cache.fetch("sitemap/recent/#{sitemap.last_posted_at.to_i}", expires_in: 1.hour) do
-        @topics = Sitemap.topics_query(3.days.ago).limit(Sitemap.size).pluck(:id, :slug, :bumped_at, :updated_at, :posts_count).to_a
+        @topics = DiscourseSitemap::Sitemap.topics_query(3.days.ago).
+          limit(DiscourseSitemap::Sitemap.size).pluck(:id, :slug, :bumped_at, :updated_at, :posts_count).to_a
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
@@ -72,14 +73,14 @@ after_initialize do
         dlocale = SiteSetting.default_locale.downcase
         @locale = dlocale.gsub(/_.*/, '')
         @locale = dlocale.sub('_', '-') if @locale === "zh"
-        @topics = Sitemap.topics_query(72.hours.ago).pluck(:id, :title, :slug, :created_at)
+        @topics = DiscourseSitemap::Sitemap.topics_query(72.hours.ago).pluck(:id, :title, :slug, :created_at)
         render :news, content_type: 'text/xml; charset=UTF-8'
       end
       render plain: @output, content_type: 'text/xml; charset=UTF-8' unless performed?
     end
   end
 
-  Discourse::Application.routes.prepend do
+  Discourse::Application.routes.append do
     mount ::DiscourseSitemap::Engine, at: "/"
   end
 
