@@ -1,6 +1,3 @@
-
-<%- if !SiteSetting.respond_to?(:publish_sitemaps) %>
 <%- if SiteSetting.sitemap_enabled? && !SiteSetting.login_required? %>
 Sitemap: <%= request.protocol %><%= request.host_with_port %>/sitemap.xml
-<% end %>
 <% end %>

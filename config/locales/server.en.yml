@@ -1,4 +1,6 @@
 en:
+  sitemap:
+    deprecated: "discourse-sitemap is deprecated and merged into Discourse's core. Please remove it from your app.yml file."
   site_settings:
     sitemap_enabled: 'Enable sitemap.xml'
     sitemap_topics_per_page: 'Number of topics shown on the sitemap page.'
