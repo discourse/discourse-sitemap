@@ -5,7 +5,7 @@ module ::Jobs
     every 1.hour
 
     def execute(args)
-      DiscourseSitemap::Sitemap.update! if SiteSetting.sitemap_enabled
+      Sitemap.update! if SiteSetting.sitemap_enabled
     end
   end
 end
