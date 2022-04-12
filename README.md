@@ -1,5 +1,7 @@
 # Sitemap Plugin
 
+## :warning: This plugin is deprecated and merged into Discourse's core. Migration will take place automatically.
+
 * Authors: richard@discoursehosting.com (@RGJ) and michael@discoursehosting.com (@michaeld)
 * Version: 1.2
 * License: MIT License

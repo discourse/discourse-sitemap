@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe DiscourseSitemap::SitemapController do
+RSpec.describe 'DiscourseSitemap::SitemapController', if: defined?(DiscourseSitemap::SitemapController) do
   describe '#default' do
     before do
       Sitemap.create!(name: '1', last_posted_at: Time.now)

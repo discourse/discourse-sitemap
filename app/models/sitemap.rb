@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class Sitemap < ActiveRecord::Base
-
+class Sitemap < ::ActiveRecord::Base
   RECENT_SITEMAP_NAME ||= 'recent'
 
   def update_last_posted_at!
@@ -50,3 +49,17 @@ class Sitemap < ActiveRecord::Base
     SiteSetting.sitemap_topics_per_page
   end
 end
+
+# == Schema Information
+#
+# Table name: sitemaps
+#
+#  id             :bigint           not null, primary key
+#  name           :string           not null
+#  last_posted_at :datetime         not null
+#  enabled        :boolean          default(TRUE), not null
+#
+# Indexes
+#
+#  index_sitemaps_on_name  (name) UNIQUE
+#
