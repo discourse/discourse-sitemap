@@ -5,6 +5,8 @@
 # https://translate.discourse.org/
 
 he:
+  sitemap:
+    deprecated: "discourse-sitemap אינו בשימוש עוד ומוזג לתוך הליבה של Discourse. נא להסיר אותו מקובץ ה־app.yml שלך."
   site_settings:
     sitemap_enabled: 'הפעלת sitemap.xml'
     sitemap_topics_per_page: 'מספר הנושאים המוצגים בעמוד מפת האתר.'
