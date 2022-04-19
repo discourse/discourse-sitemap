@@ -5,6 +5,8 @@
 # https://translate.discourse.org/
 
 ru:
+  sitemap:
+    deprecated: "Плагин discourse-sitemap устарел и объединён с Discourse. Удалите его из файла app.yml."
   site_settings:
     sitemap_enabled: 'Включить картусайта(sitemap).xml'
     sitemap_topics_per_page: 'Количество тем, отображаемых на странице карты сайта.'

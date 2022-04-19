@@ -5,6 +5,8 @@
 # https://translate.discourse.org/
 
 sv:
+  sitemap:
+    deprecated: "discourse-sitemap är utfasad och har istället sammanfogats i Discourse-kärnan. Ta bort den från din app.yml-fil."
   site_settings:
     sitemap_enabled: 'Aktivera sitemap.xml'
     sitemap_topics_per_page: 'Antal ämnen som visas på webbplatskartans sida.'
