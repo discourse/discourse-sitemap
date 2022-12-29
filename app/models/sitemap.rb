@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
 class Sitemap < ::ActiveRecord::Base
-  RECENT_SITEMAP_NAME ||= 'recent'
+  RECENT_SITEMAP_NAME ||= "recent"
 
   def update_last_posted_at!
-    query = self.name == RECENT_SITEMAP_NAME ? Sitemap.topics_query : Sitemap.topics_query_by_page(name.to_i)
+    query =
+      (
+        if self.name == RECENT_SITEMAP_NAME
+          Sitemap.topics_query
+        else
+          Sitemap.topics_query_by_page(name.to_i)
+        end
+      )
 
-    self.update!(
-      last_posted_at: query.maximum(:updated_at) || 3.days.ago,
-      enabled: true
-    )
+    self.update!(last_posted_at: query.maximum(:updated_at) || 3.days.ago, enabled: true)
   end
 
   def self.update!
@@ -32,7 +36,7 @@ class Sitemap < ::ActiveRecord::Base
     category_ids = Category.where(read_restricted: false).pluck(:id)
     query = Topic.where(category_id: category_ids, visible: true)
     if since
-      query = query.where('bumped_at > ?', since)
+      query = query.where("bumped_at > ?", since)
       query = query.order(bumped_at: :desc)
     else
       query = query.order(bumped_at: :asc)
